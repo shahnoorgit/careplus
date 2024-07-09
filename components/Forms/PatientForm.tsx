@@ -63,7 +63,7 @@ const PatientForm = () => {
         />
         <CustomeFormField
           control={form.control}
-          fieldType={FormFieldType.INPUT}
+          fieldType={FormFieldType.PHONE_INPUT}
           name="phoneNumber"
           label="Phone number"
           placeholder="+91 00000 00000"
