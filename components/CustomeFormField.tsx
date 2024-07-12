@@ -1,4 +1,5 @@
 "use client";
+import { E164Number } from "libphonenumber-js/core";
 import {
   Form,
   FormControl,
@@ -49,57 +50,58 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
   switch (props.fieldType) {
     case FormFieldType.INPUT:
       return (
-        <div className=" flex rounded-md border border-dark-500 bg-dark-400">
-          {iconSrc && (
+        <div className="flex rounded-md border border-dark-500 bg-dark-400">
+          {props.iconSrc && (
             <Image
-              src={iconSrc}
-              alt={iconAlt || "user"}
+              src={props.iconSrc}
               height={24}
               width={24}
-              className=" ml-2"
+              alt={props.iconAlt || "icon"}
+              className="ml-2"
             />
           )}
           <FormControl>
             <Input
-              placeholder={placeholder}
+              placeholder={props.placeholder}
               {...field}
-              className=" shad-input border-0"
+              className="shad-input border-0"
             />
           </FormControl>
         </div>
       );
-
-      break;
     case FormFieldType.PHONE_INPUT:
       return (
         <FormControl>
           <PhoneInput
             defaultCountry="IN"
+            placeholder={props.placeholder}
             international
             withCountryCallingCode
-            value={field.value}
+            value={field.value as E164Number | undefined}
             onChange={field.onChange}
-            className=" input-phone"
+            className="input-phone"
           />
         </FormControl>
       );
     default:
-      break;
+      return null;
   }
 };
 
 const CustomeFormField = (props: CustomProps) => {
-  const { control, fieldType, name, label } = props;
+  const { control, name, label } = props;
+
   return (
     <FormField
       control={control}
-      name="username"
+      name={name}
       render={({ field }) => (
-        <FormItem className=" flex-1">
-          {fieldType !== FormFieldType.CHECKBOX && label && (
-            <FormLabel>{label}</FormLabel>
+        <FormItem className="flex-1">
+          {props.fieldType !== FormFieldType.CHECKBOX && label && (
+            <FormLabel className="shad-input-label">{label}</FormLabel>
           )}
           <RenderField field={field} props={props} />
+
           <FormMessage className="shad-error" />
         </FormItem>
       )}

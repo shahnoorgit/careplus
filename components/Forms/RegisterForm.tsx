@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,20 +10,12 @@ import SubmitButton from "../SubmitButton";
 import { useState } from "react";
 import { UserFormValidation } from "@/lib/validations";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/lib/actions/patient.action";
+import { createUser, getUser } from "@/lib/actions/patient.action";
+import { FormFieldType } from "./PatientForm";
 
-export enum FormFieldType {
-  INPUT = "input",
-  SELECT = "select",
-  TEXTAREA = "textarea",
-  PHONE_INPUT = "phoneInput",
-  CHECKBOX = "checkbox",
-  DATE_PICKER = "datePicker",
-  SKELETON = "skeleton",
-}
-
-const PatientForm = () => {
+const RegisterForm = async ({ userId }: { userId: string }) => {
   const router = useRouter();
+  const user = await getUser(userId);
   const form = useForm<z.infer<typeof UserFormValidation>>({
     resolver: zodResolver(UserFormValidation),
     defaultValues: {
@@ -96,4 +87,4 @@ const PatientForm = () => {
   );
 };
 
-export default PatientForm;
+export default RegisterForm;
