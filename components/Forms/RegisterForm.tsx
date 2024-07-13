@@ -1,4 +1,5 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,12 +11,11 @@ import SubmitButton from "../SubmitButton";
 import { useState } from "react";
 import { UserFormValidation } from "@/lib/validations";
 import { useRouter } from "next/navigation";
-import { createUser, getUser } from "@/lib/actions/patient.action";
+import { createUser } from "@/lib/actions/patient.action";
 import { FormFieldType } from "./PatientForm";
 
-const RegisterForm = async ({ userId }: { userId: string }) => {
+const RegisterForm = ({ user }: { user: User }) => {
   const router = useRouter();
-  const user = await getUser(userId);
   const form = useForm<z.infer<typeof UserFormValidation>>({
     resolver: zodResolver(UserFormValidation),
     defaultValues: {
@@ -37,7 +37,6 @@ const RegisterForm = async ({ userId }: { userId: string }) => {
       const user = await createUser(userdata);
       console.log(user);
       setIsLoading(false);
-      if (user) router.push(`/patients/${user.$id}/register`);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -61,24 +60,6 @@ const RegisterForm = async ({ userId }: { userId: string }) => {
           placeholder="John Doe"
           iconSrc="/assets/icons/user.svg"
           iconAlt="user"
-        />
-
-        <CustomeFormField
-          fieldType={FormFieldType.INPUT}
-          control={form.control}
-          name="email"
-          label="Email"
-          placeholder="johndoe@gmail.com"
-          iconSrc="/assets/icons/email.svg"
-          iconAlt="email"
-        />
-
-        <CustomeFormField
-          fieldType={FormFieldType.PHONE_INPUT}
-          control={form.control}
-          name="phone"
-          label="Phone number"
-          placeholder="(555) 123-4567"
         />
 
         <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>

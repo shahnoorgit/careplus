@@ -1,4 +1,3 @@
-import PatientForm from "@/components/Forms/PatientForm";
 import RegisterForm from "@/components/Forms/RegisterForm";
 import { getUser } from "@/lib/actions/patient.action";
 import Image from "next/image";
@@ -6,6 +5,7 @@ import Link from "next/link";
 import React from "react";
 
 const Register = async ({ params: { userId } }: SearchParamProps) => {
+  const user = await getUser(userId);
   return (
     <div className=" h-screen max-h-screen flex">
       <section className=" remove-scrollbar container my-auto">
@@ -17,7 +17,7 @@ const Register = async ({ params: { userId } }: SearchParamProps) => {
             alt="patient"
             className="mb-12 h-10 w-fit"
           />
-          <RegisterForm userId={userId} />
+          <RegisterForm user={user} />
           <div className=" text-14-regular mt-20 flex justify-between">
             <p className=" justify-items-end text-dark-600 xl:text-left">
               © 2024 CarePulse
