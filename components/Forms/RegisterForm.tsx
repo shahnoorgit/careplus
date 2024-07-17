@@ -1,80 +1,104 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+
 import { Form, FormControl } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import CustomeFormField from "../CustomeFormField";
-import SubmitButton from "../SubmitButton";
-import { useState } from "react";
-import { PatientFormValidation } from "@/lib/validations";
-import { useRouter } from "next/navigation";
-import { createUser, registerPatient } from "@/lib/actions/patient.action";
-import { FormFieldType } from "./PatientForm";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { SelectItem } from "@/components/ui/select";
 import {
   Doctors,
   GenderOptions,
   IdentificationTypes,
   PatientFormDefaultValues,
 } from "@/constants";
-import { Label } from "../ui/label";
-import { SelectItem } from "../ui/select";
-import Image from "next/image";
+import { registerPatient } from "@/lib/actions/patient.action";
+import { PatientFormValidation } from "@/lib/validations";
+
+import "react-datepicker/dist/react-datepicker.css";
+import "react-phone-number-input/style.css";
+import CustomFormeField from "../CustomeFormField";
 import { FileUploader } from "../FileUploader";
+import SubmitButton from "../SubmitButton";
+import { FormFieldType } from "./PatientForm";
 
 const RegisterForm = ({ user }: { user: User }) => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
+    // @ts-ignore
     defaultValues: {
       ...PatientFormDefaultValues,
-      name: "",
-      email: "",
-      phone: "",
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
     },
   });
 
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof PatientFormValidation>) {
+  const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
-    let formdata;
 
+    // Store file info in form data as
+    let formData;
     if (
       values.identificationDocument &&
-      values.identificationDocument.length > 0
+      values.identificationDocument?.length > 0
     ) {
-      const blobfile = new Blob([values.identificationDocument[0]], {
+      const blobFile = new Blob([values.identificationDocument[0]], {
         type: values.identificationDocument[0].type,
       });
 
-      formdata = new FormData();
-      formdata.append("blobFile", blobfile);
-      formdata.append("fileName", values.identificationDocument[0].name);
+      formData = new FormData();
+      formData.append("blobFile", blobFile);
+      formData.append("fileName", values.identificationDocument[0].name);
     }
+
     try {
-      const patientData = {
-        ...values,
+      const patient = {
         userId: user.$id,
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
         birthDate: new Date(values.birthDate),
-        IdentificationDocument: formdata,
+        gender: values.gender,
+        address: values.address,
+        occupation: values.occupation,
+        emergencyContactName: values.emergencyContactName,
+        emergencyContactNumber: values.emergencyContactNumber,
+        primaryPhysician: values.primaryPhysician,
+        insuranceProvider: values.insuranceProvider,
+        insurancePolicyNumber: values.insurancePolicyNumber,
+        allergies: values.allergies,
+        currentMedication: values.currentMedication,
+        familyMedicalHistory: values.familyMedicalHistory,
+        pastMedicalHistory: values.pastMedicalHistory,
+        identificationType: values.identificationType,
+        identificationNumber: values.identificationNumber,
+        identificationDocument: values.identificationDocument
+          ? formData
+          : undefined,
+        privacyConsent: values.privacyConsent,
       };
-      //@ts-ignore
-      const patient = await registerPatient(patientData);
-      //@ts-ignore
-      if (patient) {
+      // @ts-ignore
+      const newPatient = await registerPatient(patient);
+
+      if (newPatient) {
         router.push(`/patients/${user.$id}/new-appointment`);
       }
-      setIsLoading(false);
     } catch (error) {
       console.log(error);
-      setIsLoading(false);
     }
-  }
 
-  const [isLoading, setIsLoading] = useState(false);
+    setIsLoading(false);
+  };
+
   return (
     <Form {...form}>
       <form
@@ -82,53 +106,58 @@ const RegisterForm = ({ user }: { user: User }) => {
         className="flex-1 space-y-12"
       >
         <section className="space-y-4">
-          <h1 className="header">
-            Welcome <span className=" max-sm:hidden">{user.name}</span> 👋
-          </h1>
+          <h1 className="header">Welcome 👋</h1>
           <p className="text-dark-700">Let us know more about yourself.</p>
         </section>
+
         <section className="space-y-6">
-          <div className=" mb-9 space-y-1">
-            <h2 className="sub-header">Personel Information.</h2>
+          <div className="mb-9 space-y-1">
+            <h2 className="sub-header">Personal Information</h2>
           </div>
 
-          <CustomeFormField
+          {/* NAME */}
+
+          <CustomFormeField
             fieldType={FormFieldType.INPUT}
             control={form.control}
             name="name"
-            label="Full Name"
             placeholder="John Doe"
             iconSrc="/assets/icons/user.svg"
             iconAlt="user"
           />
-          <div className=" flex flex-col gap-6 xl:flex-row">
-            <CustomeFormField
+
+          {/* EMAIL & PHONE */}
+          <div className="flex flex-col gap-6 xl:flex-row">
+            <CustomFormeField
               fieldType={FormFieldType.INPUT}
               control={form.control}
               name="email"
-              label="Email"
+              label="Email address"
               placeholder="johndoe@gmail.com"
               iconSrc="/assets/icons/email.svg"
               iconAlt="email"
             />
 
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.PHONE_INPUT}
               control={form.control}
               name="phone"
-              label="Phone number"
+              label="Phone Number"
               placeholder="(555) 123-4567"
             />
           </div>
-          <div className=" flex flex-col gap-6 xl:flex-row">
-            <CustomeFormField
+
+          {/* BirthDate & Gender */}
+          <div className="flex flex-col gap-6 xl:flex-row">
+            <CustomFormeField
               fieldType={FormFieldType.DATE_PICKER}
               control={form.control}
               name="birthDate"
-              label="Date of Birth"
+              label="Date of birth"
+              dateFormat="dd/MM/yyyy"
             />
 
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.SKELETON}
               control={form.control}
               name="gender"
@@ -153,45 +182,53 @@ const RegisterForm = ({ user }: { user: User }) => {
               )}
             />
           </div>
-          <div className=" flex flex-col gap-6 xl:flex-row">
-            <CustomeFormField
+
+          {/* Address & Occupation */}
+          <div className="flex flex-col gap-6 xl:flex-row">
+            <CustomFormeField
               fieldType={FormFieldType.INPUT}
               control={form.control}
               name="address"
-              label="address"
-              placeholder="sindagi road,Indi"
+              label="Address"
+              placeholder="whitefield street, Banglore"
             />
-            <CustomeFormField
+
+            <CustomFormeField
               fieldType={FormFieldType.INPUT}
               control={form.control}
               name="occupation"
-              label="occupation"
-              placeholder="Farmer"
+              label="Occupation"
+              placeholder=" Software Engineer"
             />
           </div>
-          <div className=" flex flex-col gap-6 xl:flex-row">
-            <CustomeFormField
+
+          {/* Emergency Contact Name & Emergency Contact Number */}
+          <div className="flex flex-col gap-6 xl:flex-row">
+            <CustomFormeField
               fieldType={FormFieldType.INPUT}
               control={form.control}
               name="emergencyContactName"
-              label="Emergency Contact Name"
-              placeholder="Guardian's Name"
+              label="Emergency contact name"
+              placeholder="Guardian's name"
             />
 
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.PHONE_INPUT}
               control={form.control}
               name="emergencyContactNumber"
               label="Emergency contact number"
-              placeholder="(555) 123-4567"
+              placeholder="+91 01234 56789"
             />
           </div>
         </section>
+
         <section className="space-y-6">
           <div className="mb-9 space-y-1">
             <h2 className="sub-header">Medical Information</h2>
           </div>
-          <CustomeFormField
+
+          {/* PRIMARY CARE PHYSICIAN */}
+          <CustomFormeField
             fieldType={FormFieldType.SELECT}
             control={form.control}
             name="primaryPhysician"
@@ -212,11 +249,11 @@ const RegisterForm = ({ user }: { user: User }) => {
                 </div>
               </SelectItem>
             ))}
-          </CustomeFormField>
+          </CustomFormeField>
 
           {/* INSURANCE & POLICY NUMBER */}
           <div className="flex flex-col gap-6 xl:flex-row">
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.INPUT}
               control={form.control}
               name="insuranceProvider"
@@ -224,7 +261,7 @@ const RegisterForm = ({ user }: { user: User }) => {
               placeholder="BlueCross BlueShield"
             />
 
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.INPUT}
               control={form.control}
               name="insurancePolicyNumber"
@@ -232,8 +269,10 @@ const RegisterForm = ({ user }: { user: User }) => {
               placeholder="ABC123456789"
             />
           </div>
+
+          {/* ALLERGY & CURRENT MEDICATIONS */}
           <div className="flex flex-col gap-6 xl:flex-row">
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.TEXTAREA}
               control={form.control}
               name="allergies"
@@ -241,7 +280,7 @@ const RegisterForm = ({ user }: { user: User }) => {
               placeholder="Peanuts, Penicillin, Pollen"
             />
 
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.TEXTAREA}
               control={form.control}
               name="currentMedication"
@@ -249,8 +288,10 @@ const RegisterForm = ({ user }: { user: User }) => {
               placeholder="Ibuprofen 200mg, Levothyroxine 50mcg"
             />
           </div>
+
+          {/* FAMILY MEDICATION & PAST MEDICATIONS */}
           <div className="flex flex-col gap-6 xl:flex-row">
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.TEXTAREA}
               control={form.control}
               name="familyMedicalHistory"
@@ -258,7 +299,7 @@ const RegisterForm = ({ user }: { user: User }) => {
               placeholder="Mother had brain cancer, Father has hypertension"
             />
 
-            <CustomeFormField
+            <CustomFormeField
               fieldType={FormFieldType.TEXTAREA}
               control={form.control}
               name="pastMedicalHistory"
@@ -267,11 +308,13 @@ const RegisterForm = ({ user }: { user: User }) => {
             />
           </div>
         </section>
+
         <section className="space-y-6">
           <div className="mb-9 space-y-1">
             <h2 className="sub-header">Identification and Verfication</h2>
           </div>
-          <CustomeFormField
+
+          <CustomFormeField
             fieldType={FormFieldType.SELECT}
             control={form.control}
             name="identificationType"
@@ -283,8 +326,9 @@ const RegisterForm = ({ user }: { user: User }) => {
                 {type}
               </SelectItem>
             ))}
-          </CustomeFormField>
-          <CustomeFormField
+          </CustomFormeField>
+
+          <CustomFormeField
             fieldType={FormFieldType.INPUT}
             control={form.control}
             name="identificationNumber"
@@ -292,7 +336,7 @@ const RegisterForm = ({ user }: { user: User }) => {
             placeholder="123456789"
           />
 
-          <CustomeFormField
+          <CustomFormeField
             fieldType={FormFieldType.SKELETON}
             control={form.control}
             name="identificationDocument"
@@ -304,18 +348,20 @@ const RegisterForm = ({ user }: { user: User }) => {
             )}
           />
         </section>
+
         <section className="space-y-6">
           <div className="mb-9 space-y-1">
             <h2 className="sub-header">Consent and Privacy</h2>
           </div>
-          <CustomeFormField
+
+          <CustomFormeField
             fieldType={FormFieldType.CHECKBOX}
             control={form.control}
             name="treatmentConsent"
             label="I consent to receive treatment for my health condition."
           />
 
-          <CustomeFormField
+          <CustomFormeField
             fieldType={FormFieldType.CHECKBOX}
             control={form.control}
             name="disclosureConsent"
@@ -323,7 +369,7 @@ const RegisterForm = ({ user }: { user: User }) => {
             information for treatment purposes."
           />
 
-          <CustomeFormField
+          <CustomFormeField
             fieldType={FormFieldType.CHECKBOX}
             control={form.control}
             name="privacyConsent"
@@ -332,7 +378,7 @@ const RegisterForm = ({ user }: { user: User }) => {
           />
         </section>
 
-        <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>
+        <SubmitButton isLoading={isLoading}>Submit and Continue</SubmitButton>
       </form>
     </Form>
   );
