@@ -81,3 +81,13 @@ export const registerPatient = async ({
     console.error("An error occurred while creating a new patient:", error);
   }
 };
+
+export const getPatient = async (patientId: string) => {
+  const patient = await databases.listDocuments(
+    APPWRITE_DATABASE_ID!,
+    PATIENT_COLLECTION_ID!,
+    [Query.equal("userId", [patientId])]
+  );
+
+  return parseStringify(patient.documents[0]);
+};
