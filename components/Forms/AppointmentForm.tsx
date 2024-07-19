@@ -14,6 +14,7 @@ import { FormFieldType } from "./PatientForm";
 import { Doctors } from "@/constants";
 import { SelectItem } from "../ui/select";
 import Image from "next/image";
+import { createAppointment } from "@/lib/actions/appointent.actions";
 
 const AppointmentForm = ({
   userId,
@@ -25,9 +26,10 @@ const AppointmentForm = ({
   type: "create" | "cancel" | "schedule";
 }) => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const AppointmentFormValidation = getAppointmentSchema(type);
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
-    resolver: zodResolver(UserFormValidation),
+    resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
       primaryPhysician: "",
       schedule: new Date(),
@@ -38,25 +40,45 @@ const AppointmentForm = ({
   });
 
   // 2. Define a submit handler.
-  async function onSubmit({
-    name,
-    email,
-    phone,
-  }: z.infer<typeof UserFormValidation>) {
+  async function onSubmit(values: z.infer<typeof AppointmentFormValidation>) {
     setIsLoading(true);
+    let status;
+    switch (type) {
+      case "schedule":
+        status = "scheduled";
+        break;
+      case "cancel":
+        status = "cancelled";
+        break;
+      default:
+        status = "pending";
+    }
     try {
-      const userdata = { name, email, phone };
-      const user = await createUser(userdata);
-      console.log(user);
-      setIsLoading(false);
-      if (user) router.push(`/patients/${user.$id}/register`);
+      setIsLoading(true);
+      if (type === "create" && patientId) {
+        const appointmentData = {
+          userId,
+          patient: patientId,
+          primaryPhysician: values.primaryPhysician,
+          schedule: new Date(values.schedule),
+          reason: values.reason!,
+          status: status as Status,
+          note: values.note,
+        };
+        const newAppointment = await createAppointment(appointmentData);
+        if (newAppointment) {
+          form.reset();
+          router.push(
+            `/patients/${userId}/new-appointment/success?appointmentId=${newAppointment.$id}`
+          );
+        }
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
   }
 
-  const [isLoading, setIsLoading] = useState(false);
   let btnWord;
   switch (type) {
     case "create":
