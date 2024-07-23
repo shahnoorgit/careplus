@@ -4,7 +4,6 @@ import Image from "next/image";
 import React from "react";
 
 const StatusBadge = ({ Status }: { Status: Status }) => {
-  console.log(Status);
   return (
     <div
       className={clsx("status-badge", {

@@ -108,17 +108,16 @@ const AppointmentForm = ({
     }
   }
 
-  let btnWord;
+  let buttonLabel;
   switch (type) {
-    case "create":
-      btnWord = "Create appointment";
-      break;
     case "cancel":
-      btnWord = "Cancel appointment";
+      buttonLabel = "Cancel Appointment";
       break;
     case "schedule":
-      btnWord = "Schedule appointment";
+      buttonLabel = "Schedule Appointment";
       break;
+    default:
+      buttonLabel = "Submit Apppointment";
   }
   return (
     <Form {...form}>
@@ -126,18 +125,20 @@ const AppointmentForm = ({
         {type === "create" && (
           <section className="mb-12 space-y-4">
             <h1 className="header">New Appointment</h1>
-            <p className="text-dark-700">Request a new appointment in 10 sec</p>
+            <p className="text-dark-700">
+              Request a new appointment in 10 seconds.
+            </p>
           </section>
         )}
+
         {type !== "cancel" && (
           <>
-            {" "}
             <CustomeFormField
               fieldType={FormFieldType.SELECT}
               control={form.control}
               name="primaryPhysician"
               label="Doctor"
-              placeholder="Select a Doctor"
+              placeholder="Select a doctor"
             >
               {Doctors.map((doctor, i) => (
                 <SelectItem key={doctor.name + i} value={doctor.name}>
@@ -154,41 +155,49 @@ const AppointmentForm = ({
                 </SelectItem>
               ))}
             </CustomeFormField>
+
             <CustomeFormField
               fieldType={FormFieldType.DATE_PICKER}
               control={form.control}
               name="schedule"
-              label="Expected Appointment Date"
+              label="Expected appointment date"
               showTimeSelect
-              dateFormat="MM/dd/yyyy - h:mm aa"
+              dateFormat="MM/dd/yyyy  -  h:mm aa"
             />
-            <div className="flex flex-col gap-6 xl:flex-row">
+
+            <div
+              className={`flex flex-col gap-6  ${
+                type === "create" && "xl:flex-row"
+              }`}
+            >
               <CustomeFormField
                 fieldType={FormFieldType.TEXTAREA}
                 control={form.control}
                 name="reason"
-                label="Reason for appointment"
-                placeholder="Enter reason for appointment"
+                label="Appointment reason"
+                placeholder="Annual montly check-up"
+                disabled={type === "schedule"}
               />
 
               <CustomeFormField
                 fieldType={FormFieldType.TEXTAREA}
                 control={form.control}
                 name="note"
-                label="Notes"
-                placeholder="Enter notes"
+                label="Comments/notes"
+                placeholder="Prefer afternoon appointments, if possible"
+                disabled={type === "schedule"}
               />
             </div>
           </>
         )}
 
-        {type == "cancel" && (
+        {type === "cancel" && (
           <CustomeFormField
             fieldType={FormFieldType.TEXTAREA}
             control={form.control}
-            name="cancelReason"
+            name="cancellationReason"
             label="Reason for cancellation"
-            placeholder="Enter reason for cancellation"
+            placeholder="Urgent meeting came up"
           />
         )}
 
@@ -198,7 +207,7 @@ const AppointmentForm = ({
             type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"
           } w-full`}
         >
-          {btnWord}
+          {buttonLabel}
         </SubmitButton>
       </form>
     </Form>
