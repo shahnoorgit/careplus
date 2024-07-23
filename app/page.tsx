@@ -6,7 +6,7 @@ import PassKeyModel from "@/components/PassKeyModel";
 
 export default function Home({ searchParams }: SearchParamProps) {
   const isAdmin = searchParams.admin === "true";
-  console.log(searchParams.admin);
+
   return (
     <div className=" h-screen max-h-screen flex">
       {isAdmin && <PassKeyModel />}
