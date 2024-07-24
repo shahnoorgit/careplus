@@ -6,8 +6,14 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
+export const revalidate = 0;
+
 const Admin = async () => {
   const appointmentList = await getRecentAppointmentsList();
+
+  if (!appointmentList) {
+    return <div>Error loading appointments data.</div>;
+  }
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
       <header className="admin-header">

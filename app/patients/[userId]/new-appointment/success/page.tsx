@@ -65,7 +65,7 @@ const SuccessPage = async ({
               width={24}
               alt="calendar"
             />
-            <p>{formatDateTime(appointment?.schedule).dateTime}</p>
+            <p>{formatDateTime(appointment.schedule).dateTime}</p>
           </div>
         </section>
         <Button variant="outline" className="shad-primary-btn" asChild>
