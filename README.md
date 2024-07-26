@@ -1,4 +1,5 @@
 # CarePlus
+![CarePlus](public/project.png)
 
 CarePlus is an advanced patient appointment management system designed to streamline the process of scheduling, managing, and confirming medical appointments. Built with Next.js, TypeScript, ShadCN, and TailwindCSS, CarePlus provides a comprehensive solution for both patients and administrators.
 
