@@ -35,7 +35,7 @@ export default function Home({ searchParams }: SearchParamProps) {
         width={1000}
         height={100}
         alt="Onboarding img"
-        className="side-image max-w-[50%]"
+        className="side-image max-w-[50%] max-sm:hidden"
       />
     </div>
   );

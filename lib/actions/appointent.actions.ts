@@ -6,10 +6,11 @@ import {
   BUCKET_ID,
   databases,
   ENDPOINT,
+  messaging,
   PATIENT_COLLECTION_ID,
   PROJECT_ID,
 } from "../appwrite.config";
-import { parseStringify } from "../utils";
+import { formatDateTime, parseStringify } from "../utils";
 import { Appointment } from "@/types/appwrite.types";
 import { revalidatePath } from "next/cache";
 
@@ -86,6 +87,7 @@ export const getRecentAppointmentsList = async () => {
     console.log(error);
   }
 };
+
 export const updateAppointment = async ({
   appointmentId,
   userId,
@@ -104,10 +106,33 @@ export const updateAppointment = async ({
       throw new Error(" appointment not found");
     }
 
-    // TODO sms notification
-
+    const smsMessage = `Greetings from CarePulse. ${
+      type === "schedule"
+        ? `Your appointment is confirmed for ${
+            formatDateTime(appointment.schedule!).dateTime
+          } with Dr. ${appointment.primaryPhysician}`
+        : `We regret to inform that your appointment for ${
+            formatDateTime(appointment.schedule!).dateTime
+          } is cancelled. Reason:  ${appointment.cancellationReason}`
+    }.`;
+    await SendSMSNotifications(userId, smsMessage);
     revalidatePath("/admin");
     return parseStringify(updatedappointment);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const SendSMSNotifications = async (userId: string, content: string) => {
+  try {
+    const message = await messaging.createSms(
+      ID.unique(),
+      content,
+      [],
+      [userId]
+    );
+
+    return parseStringify(message);
   } catch (error) {
     console.log(error);
   }
