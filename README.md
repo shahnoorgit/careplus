@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CarePlus
 
-## Getting Started
+CarePlus is an advanced patient appointment management system designed to streamline the process of scheduling, managing, and confirming medical appointments. Built with Next.js, TypeScript, ShadCN, and TailwindCSS, CarePlus provides a comprehensive solution for both patients and administrators.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Patient Side
+- **Register as a Patient**: Users can sign up and create a personal profile.
+- **Book a New Appointment with Doctor**: Patients can schedule appointments with doctors at their convenience and can book multiple appointments.
+- **View Appointment History**: Patients can view their past and upcoming appointments.
+- **Update Personal Information**: Patients can update their profile information as needed.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Admin Side
+- **Manage Appointments**: Administrators can efficiently view and handle all scheduled appointments.
+- **Confirm/Schedule Appointment**: Admins can confirm and set appointment times to ensure they are properly scheduled.
+- **Cancel Appointment**: Administrators have the ability to cancel any appointment as needed.
+- **Manage Doctor Profiles**: Admins can add, update, and remove doctor profiles.
+- **Generate Reports**: Admins can generate detailed reports on appointment statistics and patient data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Notifications
+- **Send SMS on Appointment Confirmation**: Patients receive SMS notifications to confirm their appointment details.
+- **Reminder Notifications**: Patients receive reminders for upcoming appointments via SMS.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Additional Features
+- **Complete Responsiveness**: The application works seamlessly on all device types and screen sizes.
+- **File Upload Using Appwrite Storage**: Users can upload and store files securely within the app using Appwrite storage services.
+- **Manage and Track Application Performance Using Sentry**: The application uses Sentry to monitor and track its performance and detect any errors.
+- **Secure Authentication**: The application uses secure authentication mechanisms to protect user data.
+- **User Roles and Permissions**: Different roles and permissions for patients, doctors, and administrators to ensure proper access control.
+- **Search and Filter Appointments**: Advanced search and filter options to quickly find specific appointments.
+- **Multi-language Support**: The application supports multiple languages for a better user experience.
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend**: Next.js, TypeScript, ShadCN, TailwindCSS
+- **Backend**: Next.js Server Actions
+- **Storage**: Appwrite Storage
+- **Monitoring**: Sentry
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Contributions are welcome! Please fork the repository and submit a pull request for review.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Contact
+
+For any inquiries or feedback, please reach out to us at support@careplus.com.
