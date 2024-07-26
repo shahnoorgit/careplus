@@ -47,4 +47,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries or feedback, please reach out to us at support@careplus.com.
+For any inquiries or feedback, please reach out to us at shahnoormujawar@gmail.com.
